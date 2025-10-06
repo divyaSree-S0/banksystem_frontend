@@ -1,0 +1,134 @@
+.account-form-container {
+  padding: 20px;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.page-header h1 {
+  margin: 0;
+  color: var(--primary-color);
+}
+
+.account-form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 20px 0;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.customer-info {
+  padding: 16px;
+
+.user-info {
+  background-color: #e3f2fd;
+  border: 1px solid #2196f3;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.user-info h3 {
+  margin: 0 0 8px 0;
+  color: #1976d2;
+  font-size: 16px;
+  font-weight: 500;
+}
+  background-color: var(--light-gray);
+  border-radius: 8px;
+  border-left: 4px solid var(--primary-color);
+}
+
+.customer-info h4 {
+  margin: 0 0 12px 0;
+  color: var(--primary-color);
+}
+
+.customer-details p {
+  margin: 4px 0;
+  color: var(--dark-gray);
+}
+
+.account-type-option {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.type-name {
+  font-weight: 500;
+}
+
+.type-description {
+  color: var(--dark-gray);
+  font-size: 12px;
+}
+
+.account-benefits {
+  padding: 16px;
+  background-color: #f0f9ff;
+  border-radius: 8px;
+  border-left: 4px solid var(--secondary-color);
+}
+
+.account-benefits h4 {
+  margin: 0 0 12px 0;
+  color: var(--secondary-color);
+}
+
+.benefits-list ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.benefits-list li {
+  margin: 8px 0;
+  color: var(--dark-gray);
+}
+
+.form-actions {
+  display: flex;
+  gap: 16px;
+  justify-content: flex-end;
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.form-actions button {
+  min-width: 120px;
+}
+
+mat-spinner {
+  margin-right: 8px;
+}
+
+@media (max-width: 768px) {
+  .account-form-container {
+    padding: 10px;
+  }
+
+  .page-header {
+    flex-direction: column;
+    gap: 16px;
+    align-items: flex-start;
+  }
+
+  .form-actions {
+    flex-direction: column;
+  }
+
+  .form-actions button {
+    width: 100%;
+  }
+}

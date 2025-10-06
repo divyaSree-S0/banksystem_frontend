@@ -1,0 +1,184 @@
+<div class="account-detail-container">
+  <div class="page-header">
+    <button mat-icon-button (click)="goBack()">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <h1>Account Details</h1>
+    <div class="header-actions">
+      <button mat-raised-button color="accent" [routerLink]="['/customers', account?.customerId]" [disabled]="!account">
+        <mat-icon>person</mat-icon>
+        View Customer
+      </button>
+      <button mat-raised-button color="primary" (click)="makeTransaction()" [disabled]="!account">
+        <mat-icon>swap_horiz</mat-icon>
+        Make Transaction
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading Spinner -->
+  <div *ngIf="isLoading" class="loading-container">
+    <mat-spinner></mat-spinner>
+    <p>Loading account details...</p>
+  </div>
+
+  <!-- Account Information -->
+  <div *ngIf="!isLoading && account">
+    <!-- Account Overview Card -->
+    <mat-card class="account-overview-card">
+      <mat-card-header>
+        <div mat-card-avatar class="account-avatar">
+          <mat-icon>account_balance</mat-icon>
+        </div>
+        <mat-card-title>{{ account.accountNumber }}</mat-card-title>
+        <mat-card-subtitle>
+          <mat-chip [class]="'chip-' + account.accountType.toLowerCase()">
+            {{ account.accountType }} Account
+          </mat-chip>
+        </mat-card-subtitle>
+      </mat-card-header>
+
+      <mat-card-content>
+        <div class="account-details">
+          <div class="balance-section">
+            <h2 class="balance-amount" [class]="getBalanceClass(account.balance)">
+              ${{ account.balance | number:'1.2-2' }}
+            </h2>
+            <p class="balance-label">Current Balance</p>
+          </div>
+
+          <div class="account-info">
+            <div class="info-item">
+              <mat-icon>person</mat-icon>
+              <span class="label">Account Holder:</span>
+              <span class="value">{{ account.customerName }}</span>
+            </div>
+            
+            <div class="info-item">
+              <mat-icon>credit_card</mat-icon>
+              <span class="label">Account Number:</span>
+              <span class="value">{{ account.accountNumber }}</span>
+            </div>
+            
+            <div class="info-item">
+              <mat-icon>account_balance</mat-icon>
+              <span class="label">Account Type:</span>
+              <span class="value">{{ account.accountType }}</span>
+            </div>
+          </div>
+        </div>
+      </mat-card-content>
+
+      <mat-card-actions>
+        <button mat-button color="primary" (click)="makeDeposit()">
+          <mat-icon>add</mat-icon>
+          Deposit
+        </button>
+        <button mat-button color="accent" (click)="makeWithdrawal()">
+          <mat-icon>remove</mat-icon>
+          Withdraw
+        </button>
+        <button mat-button color="primary" (click)="makeTransfer()">
+          <mat-icon>swap_horiz</mat-icon>
+          Transfer
+        </button>
+      </mat-card-actions>
+    </mat-card>
+
+    <!-- Transactions Section -->
+    <mat-card class="transactions-card">
+      <mat-card-header>
+        <mat-card-title>Transaction History</mat-card-title>
+        <div class="card-header-actions">
+          <button mat-icon-button color="primary" (click)="loadTransactions()" matTooltip="Refresh">
+            <mat-icon>refresh</mat-icon>
+          </button>
+        </div>
+      </mat-card-header>
+
+      <mat-card-content>
+        <!-- Loading Transactions -->
+        <div *ngIf="isLoadingTransactions" class="loading-transactions">
+          <mat-spinner diameter="30"></mat-spinner>
+          <span>Loading transactions...</span>
+        </div>
+
+        <!-- Transactions Table -->
+        <div *ngIf="!isLoadingTransactions" class="transactions-section">
+          <table mat-table [dataSource]="accountTransactions" class="transactions-table" *ngIf="accountTransactions.length > 0">
+            
+            <!-- Date Column -->
+            <ng-container matColumnDef="dateTime">
+              <th mat-header-cell *matHeaderCellDef>Date & Time</th>
+              <td mat-cell *matCellDef="let transaction">
+                <div class="date-info">
+                  <span class="date">{{ transaction.dateTime | date:'MMM dd, yyyy' }}</span>
+                  <small class="time">{{ transaction.dateTime | date:'HH:mm:ss' }}</small>
+                </div>
+              </td>
+            </ng-container>
+
+            <!-- Type Column -->
+            <ng-container matColumnDef="type">
+              <th mat-header-cell *matHeaderCellDef>Type</th>
+              <td mat-cell *matCellDef="let transaction">
+                <mat-chip [class]="'type-' + transaction.type.toLowerCase()">
+                  {{ transaction.type }}
+                </mat-chip>
+              </td>
+            </ng-container>
+
+            <!-- Description Column -->
+            <ng-container matColumnDef="description">
+              <th mat-header-cell *matHeaderCellDef>Description</th>
+              <td mat-cell *matCellDef="let transaction">
+                {{ transaction.description || 'No description' }}
+              </td>
+            </ng-container>
+
+            <!-- Amount Column -->
+            <ng-container matColumnDef="amount">
+              <th mat-header-cell *matHeaderCellDef>Amount</th>
+              <td mat-cell *matCellDef="let transaction" class="amount-cell">
+                <span [class]="getTransactionAmountClass(transaction.type)">
+                  {{ getTransactionSign(transaction.type) }}${{ transaction.amount | number:'1.2-2' }}
+                </span>
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="transactionColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: transactionColumns;"></tr>
+          </table>
+
+          <!-- No Transactions Message -->
+          <div *ngIf="accountTransactions.length === 0" class="no-transactions">
+            <mat-icon>receipt_long</mat-icon>
+            <h3>No transactions found</h3>
+            <p>This account doesn't have any transaction history yet.</p>
+            <button mat-raised-button color="primary" (click)="makeTransaction()">
+              <mat-icon>swap_horiz</mat-icon>
+              Make First Transaction
+            </button>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="!isLoading && !account" class="error-state">
+    <mat-card>
+      <mat-card-content>
+        <div class="error-content">
+          <mat-icon>error_outline</mat-icon>
+          <h3>Account Not Found</h3>
+          <p>The requested account could not be found.</p>
+          <button mat-raised-button color="primary" (click)="goBack()">
+            <mat-icon>arrow_back</mat-icon>
+            Back to Account List
+          </button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

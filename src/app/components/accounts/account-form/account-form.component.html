@@ -1,0 +1,127 @@
+<div class="account-form-container">
+  <div class="page-header">
+    <h1>{{ isAdmin ? 'Create New Account' : 'Open New Account' }}</h1>
+    <button mat-icon-button (click)="goBack()">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+  </div>
+
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>Account Information</mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+      <form [formGroup]="accountForm" (ngSubmit)="onSubmit()" class="account-form">
+        
+        <!-- Customer Selection - Only show for admin -->
+        <mat-form-field appearance="outline" class="full-width" *ngIf="isAdmin">
+          <mat-label>Select Customer</mat-label>
+          <mat-select formControlName="customerId" (selectionChange)="onCustomerChange($event.value)">
+            <mat-option value="">Choose a customer</mat-option>
+            <mat-option *ngFor="let customer of customers" [value]="customer.customerId">
+              {{ customer.customerName }} ({{ customer.email }})
+            </mat-option>
+          </mat-select>
+          <mat-icon matSuffix>person</mat-icon>
+          <mat-error *ngIf="accountForm.get('customerId')?.hasError('required')">
+            Customer selection is required
+          </mat-error>
+        </mat-form-field>
+
+        <!-- User Info Display - Only show for regular users -->
+        <div *ngIf="!isAdmin && currentUser" class="user-info-display">
+          <h4>Opening account for:</h4>
+          <div class="user-details">
+            <p><strong>Name:</strong> {{ currentUser.fullName }}</p>
+            <p><strong>Email:</strong> {{ currentUser.email }}</p>
+          </div>
+        </div>
+
+        <!-- Selected Customer Info - Only for admin -->
+        <div *ngIf="selectedCustomer && isAdmin" class="customer-info">
+          <h4>Selected Customer Details:</h4>
+          <div class="customer-details">
+            <p><strong>Name:</strong> {{ selectedCustomer.customerName }}</p>
+            <p><strong>Email:</strong> {{ selectedCustomer.email }}</p>
+            <p><strong>Phone:</strong> {{ selectedCustomer.phoneNo }}</p>
+          </div>
+        </div>
+
+        <!-- Account Type -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Account Type</mat-label>
+          <mat-select formControlName="accountType">
+            <mat-option value="">Select account type</mat-option>
+            <mat-option value="SAVINGS">
+              <div class="account-type-option">
+                <span class="type-name">Savings Account</span>
+                <small class="type-description">Higher interest, limited transactions</small>
+              </div>
+            </mat-option>
+            <mat-option value="CURRENT">
+              <div class="account-type-option">
+                <span class="type-name">Current Account</span>
+                <small class="type-description">Unlimited transactions, overdraft facility</small>
+              </div>
+            </mat-option>
+          </mat-select>
+          <mat-icon matSuffix>account_balance</mat-icon>
+          <mat-error *ngIf="accountForm.get('accountType')?.hasError('required')">
+            Account type is required
+          </mat-error>
+        </mat-form-field>
+
+        <!-- Initial Balance -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Initial Balance</mat-label>
+          <input matInput formControlName="initialBalance" type="number" step="0.01" min="0" 
+                 placeholder="Enter initial deposit amount">
+          <span matTextPrefix>$&nbsp;</span>
+          <mat-icon matSuffix>attach_money</mat-icon>
+          <mat-error *ngIf="accountForm.get('initialBalance')?.hasError('required')">
+            Initial balance is required
+          </mat-error>
+          <mat-error *ngIf="accountForm.get('initialBalance')?.hasError('min')">
+            Initial balance must be at least $0
+          </mat-error>
+          <mat-hint>Minimum opening balance varies by account type</mat-hint>
+        </mat-form-field>
+
+        <!-- Account Type Benefits -->
+        <div *ngIf="accountForm.get('accountType')?.value" class="account-benefits">
+          <h4>Account Benefits:</h4>
+          <div *ngIf="accountForm.get('accountType')?.value === 'SAVINGS'" class="benefits-list">
+            <ul>
+              <li>Higher interest rates on deposits</li>
+              <li>Online and mobile banking</li>
+              <li>ATM access worldwide</li>
+              <li>Monthly statements</li>
+            </ul>
+          </div>
+          <div *ngIf="accountForm.get('accountType')?.value === 'CURRENT'" class="benefits-list">
+            <ul>
+              <li>Unlimited transactions</li>
+              <li>Overdraft facility available</li>
+              <li>Business banking features</li>
+              <li>Check book facility</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="form-actions">
+          <button mat-button type="button" (click)="goBack()" [disabled]="isSubmitting">
+            Cancel
+          </button>
+          <button mat-raised-button color="primary" type="submit" 
+                  [disabled]="accountForm.invalid || isSubmitting">
+            <mat-spinner diameter="20" *ngIf="isSubmitting"></mat-spinner>
+            <span *ngIf="!isSubmitting">Create Account</span>
+            <span *ngIf="isSubmitting">Creating Account...</span>
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>

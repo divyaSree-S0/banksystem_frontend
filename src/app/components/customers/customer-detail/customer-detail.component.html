@@ -1,0 +1,156 @@
+<div class="customer-detail-container">
+  <div class="page-header">
+    <button mat-icon-button (click)="goBack()">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <h1>Customer Details</h1>
+    <div class="header-actions">
+      <button mat-raised-button color="accent" (click)="editCustomer()" [disabled]="!customer">
+        <mat-icon>edit</mat-icon>
+        Edit Customer
+      </button>
+      <button mat-raised-button color="primary" (click)="createAccount()" [disabled]="!customer">
+        <mat-icon>add</mat-icon>
+        Create Account
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading Spinner -->
+  <div *ngIf="isLoading" class="loading-container">
+    <mat-spinner></mat-spinner>
+    <p>Loading customer details...</p>
+  </div>
+
+  <!-- Customer Information -->
+  <div *ngIf="!isLoading && customer">
+    <mat-card class="customer-info-card">
+      <mat-card-header>
+        <div mat-card-avatar class="customer-avatar">
+          <mat-icon>person</mat-icon>
+        </div>
+        <mat-card-title>{{ customer.customerName }}</mat-card-title>
+        <mat-card-subtitle>Customer ID: {{ customer.customerId }}</mat-card-subtitle>
+      </mat-card-header>
+
+      <mat-card-content>
+        <div class="customer-details">
+          <div class="detail-item">
+            <mat-icon>email</mat-icon>
+            <span class="label">Email:</span>
+            <span class="value">{{ customer.email }}</span>
+          </div>
+          
+          <div class="detail-item">
+            <mat-icon>phone</mat-icon>
+            <span class="label">Phone:</span>
+            <span class="value">{{ customer.phoneNo }}</span>
+          </div>
+          
+          <div class="detail-item">
+            <mat-icon>location_on</mat-icon>
+            <span class="label">Address:</span>
+            <span class="value">{{ customer.address }}</span>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Accounts Section -->
+    <mat-card class="accounts-card">
+      <mat-card-header>
+        <mat-card-title>Customer Accounts</mat-card-title>
+        <div class="card-header-actions">
+          <button mat-icon-button color="primary" (click)="loadAccounts()" matTooltip="Refresh">
+            <mat-icon>refresh</mat-icon>
+          </button>
+        </div>
+      </mat-card-header>
+
+      <mat-card-content>
+        <!-- Loading Accounts -->
+        <div *ngIf="isLoadingAccounts" class="loading-accounts">
+          <mat-spinner diameter="30"></mat-spinner>
+          <span>Loading accounts...</span>
+        </div>
+
+        <!-- Accounts Table -->
+        <div *ngIf="!isLoadingAccounts" class="accounts-section">
+          <table mat-table [dataSource]="customerAccounts" class="accounts-table" *ngIf="customerAccounts.length > 0">
+            
+            <!-- Account Number Column -->
+            <ng-container matColumnDef="accountNumber">
+              <th mat-header-cell *matHeaderCellDef>Account Number</th>
+              <td mat-cell *matCellDef="let account">{{ account.accountNumber }}</td>
+            </ng-container>
+
+            <!-- Account Type Column -->
+            <ng-container matColumnDef="accountType">
+              <th mat-header-cell *matHeaderCellDef>Type</th>
+              <td mat-cell *matCellDef="let account">
+                <span class="account-type-badge" [class]="'badge-' + account.accountType.toLowerCase()">
+                  {{ account.accountType }}
+                </span>
+              </td>
+            </ng-container>
+
+            <!-- Balance Column -->
+            <ng-container matColumnDef="balance">
+              <th mat-header-cell *matHeaderCellDef>Balance</th>
+              <td mat-cell *matCellDef="let account" class="balance-cell">
+                ${{ account.balance | number:'1.2-2' }}
+              </td>
+            </ng-container>
+
+            <!-- Actions Column -->
+            <ng-container matColumnDef="actions">
+              <th mat-header-cell *matHeaderCellDef>Actions</th>
+              <td mat-cell *matCellDef="let account" class="actions-cell">
+                <button mat-icon-button color="primary" [routerLink]="['/accounts', account.accountId]"
+                        matTooltip="View Account Details">
+                  <mat-icon>visibility</mat-icon>
+                </button>
+                <button mat-icon-button color="accent" [routerLink]="['/transactions/new']" 
+                        [queryParams]="{accountId: account.accountId}"
+                        matTooltip="Make Transaction">
+                  <mat-icon>swap_horiz</mat-icon>
+                </button>
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="accountColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: accountColumns;"></tr>
+          </table>
+
+          <!-- No Accounts Message -->
+          <div *ngIf="customerAccounts.length === 0" class="no-accounts">
+            <mat-icon>account_balance</mat-icon>
+            <h3>No accounts found</h3>
+            <p>This customer doesn't have any accounts yet.</p>
+            <button mat-raised-button color="primary" (click)="createAccount()">
+              <mat-icon>add</mat-icon>
+              Create First Account
+            </button>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="!isLoading && !customer" class="error-state">
+    <mat-card>
+      <mat-card-content>
+        <div class="error-content">
+          <mat-icon>error_outline</mat-icon>
+          <h3>Customer Not Found</h3>
+          <p>The requested customer could not be found.</p>
+          <button mat-raised-button color="primary" (click)="goBack()">
+            <mat-icon>arrow_back</mat-icon>
+            Back to Customer List
+          </button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

@@ -1,0 +1,133 @@
+.transaction-form-container {
+  padding: 20px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.page-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.page-header h1 {
+  margin: 0;
+  color: var(--primary-color);
+}
+
+.transaction-form-card {
+  margin-bottom: 24px;
+}
+
+.full-width {
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+.balance-info {
+  margin: 20px 0;
+}
+
+.balance-card {
+  background-color: var(--light-gray);
+  border-radius: 8px;
+  padding: 16px;
+  border-left: 4px solid var(--primary-color);
+}
+
+.balance-card h4 {
+  margin: 0 0 12px 0;
+  color: var(--dark-gray);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.balance-details {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.current-balance,
+.remaining-balance {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.current-balance .label,
+.remaining-balance .label {
+  color: var(--dark-gray);
+  font-size: 14px;
+}
+
+.current-balance .amount {
+  font-weight: 500;
+  color: var(--primary-color);
+}
+
+.remaining-balance .amount {
+  font-weight: 500;
+}
+
+.remaining-positive {
+  color: var(--success-color);
+}
+
+.remaining-zero {
+  color: var(--dark-gray);
+}
+
+.remaining-negative {
+  color: var(--error-color);
+}
+
+.transfer-warning {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  background-color: #fff3cd;
+  border: 1px solid #ffeaa7;
+  border-radius: 4px;
+  color: #856404;
+  margin: 16px 0;
+}
+
+.transfer-warning mat-icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+}
+
+mat-card-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 16px 24px;
+}
+
+@media (max-width: 768px) {
+  .transaction-form-container {
+    padding: 10px;
+  }
+
+  .balance-details {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .current-balance,
+  .remaining-balance {
+    justify-content: space-between;
+  }
+
+  mat-card-actions {
+    flex-direction: column;
+  }
+
+  mat-card-actions button {
+    width: 100%;
+  }
+}

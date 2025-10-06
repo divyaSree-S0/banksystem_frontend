@@ -1,0 +1,202 @@
+<div class="signup-container">
+  <div class="signup-wrapper">
+    <!-- Left Side - Branding -->
+    <div class="branding-section">
+      <div class="branding-content">
+        <div class="logo-section">
+          <mat-icon class="bank-icon">account_balance</mat-icon>
+          <h1>Bank System</h1>
+          <p class="tagline">Join thousands of satisfied customers</p>
+        </div>
+        <div class="feature-highlights">
+          <div class="feature-item">
+            <mat-icon>security</mat-icon>
+            <span>Advanced encryption</span>
+          </div>
+          <div class="feature-item">
+            <mat-icon>account_balance_wallet</mat-icon>
+            <span>Multiple account types</span>
+          </div>
+          <div class="feature-item">
+            <mat-icon>phone_android</mat-icon>
+            <span>Mobile banking app</span>
+          </div>
+          <div class="feature-item">
+            <mat-icon>credit_card</mat-icon>
+            <span>Free debit card</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Side - Signup Form -->
+    <div class="form-section">
+      <div class="form-content">
+        <div class="form-header">
+          <h2>Create your account</h2>
+          <p>Get started with your banking journey</p>
+        </div>
+
+        <form [formGroup]="signupForm" (ngSubmit)="onSignup()" class="signup-form">
+          <div class="name-row">
+            <mat-form-field class="half-width" appearance="outline">
+              <mat-label>First Name</mat-label>
+              <input matInput 
+                     formControlName="firstName" 
+                     autocomplete="given-name">
+              <mat-icon matSuffix>person</mat-icon>
+              <mat-error *ngIf="signupForm.get('firstName')?.hasError('required')">
+                First name is required
+              </mat-error>
+              <mat-error *ngIf="signupForm.get('firstName')?.hasError('minlength')">
+                First name must be at least 2 characters
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field class="half-width" appearance="outline">
+              <mat-label>Last Name</mat-label>
+              <input matInput 
+                     formControlName="lastName" 
+                     autocomplete="family-name">
+              <mat-icon matSuffix>person</mat-icon>
+              <mat-error *ngIf="signupForm.get('lastName')?.hasError('required')">
+                Last name is required
+              </mat-error>
+              <mat-error *ngIf="signupForm.get('lastName')?.hasError('minlength')">
+                Last name must be at least 2 characters
+              </mat-error>
+            </mat-form-field>
+          </div>
+
+          <mat-form-field class="full-width" appearance="outline">
+            <mat-label>Email Address</mat-label>
+            <input matInput 
+                   type="email"
+                   formControlName="email" 
+                   autocomplete="email">
+            <mat-icon matSuffix>email</mat-icon>
+            <mat-error *ngIf="signupForm.get('email')?.hasError('required')">
+              Email is required
+            </mat-error>
+            <mat-error *ngIf="signupForm.get('email')?.hasError('email')">
+              Please enter a valid email address
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field class="full-width" appearance="outline">
+            <mat-label>Phone Number</mat-label>
+            <input matInput 
+                   type="tel"
+                   formControlName="phoneNumber" 
+                   autocomplete="tel">
+            <mat-icon matSuffix>phone</mat-icon>
+            <mat-error *ngIf="signupForm.get('phoneNumber')?.hasError('required')">
+              Phone number is required
+            </mat-error>
+            <mat-error *ngIf="signupForm.get('phoneNumber')?.hasError('pattern')">
+              Please enter a valid phone number
+            </mat-error>
+            <mat-error *ngIf="signupForm.get('phoneNumber')?.hasError('minlength')">
+              Phone number must be at least 10 digits
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field class="full-width" appearance="outline">
+            <mat-label>Address</mat-label>
+            <textarea matInput 
+                      formControlName="address" 
+                      autocomplete="address-line1"
+                      rows="2"
+                      placeholder="Enter your full address">
+            </textarea>
+            <mat-icon matSuffix>location_on</mat-icon>
+            <mat-error *ngIf="signupForm.get('address')?.hasError('required')">
+              Address is required
+            </mat-error>
+            <mat-error *ngIf="signupForm.get('address')?.hasError('minlength')">
+              Address must be at least 10 characters
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field class="full-width" appearance="outline">
+            <mat-label>Username</mat-label>
+            <input matInput 
+                   formControlName="username" 
+                   autocomplete="username">
+            <mat-icon matSuffix>account_circle</mat-icon>
+            <mat-error *ngIf="signupForm.get('username')?.hasError('required')">
+              Username is required
+            </mat-error>
+            <mat-error *ngIf="signupForm.get('username')?.hasError('minlength')">
+              Username must be at least 3 characters
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field class="full-width" appearance="outline">
+            <mat-label>Password</mat-label>
+            <input matInput 
+                   [type]="hidePassword ? 'password' : 'text'"
+                   formControlName="password" 
+                   autocomplete="new-password">
+            <button mat-icon-button matSuffix (click)="hidePassword = !hidePassword" type="button">
+              <mat-icon>{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
+            </button>
+            <mat-error *ngIf="signupForm.get('password')?.hasError('required')">
+              Password is required
+            </mat-error>
+            <mat-error *ngIf="signupForm.get('password')?.hasError('minlength')">
+              Password must be at least 8 characters
+            </mat-error>
+            <mat-error *ngIf="signupForm.get('password')?.hasError('pattern')">
+              Password must contain at least one uppercase, one lowercase, and one number
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field class="full-width" appearance="outline">
+            <mat-label>Confirm Password</mat-label>
+            <input matInput 
+                   [type]="hideConfirmPassword ? 'password' : 'text'"
+                   formControlName="confirmPassword" 
+                   autocomplete="new-password">
+            <button mat-icon-button matSuffix (click)="hideConfirmPassword = !hideConfirmPassword" type="button">
+              <mat-icon>{{hideConfirmPassword ? 'visibility_off' : 'visibility'}}</mat-icon>
+            </button>
+            <mat-error *ngIf="signupForm.get('confirmPassword')?.hasError('required')">
+              Please confirm your password
+            </mat-error>
+            <mat-error *ngIf="signupForm.hasError('passwordMismatch') && signupForm.get('confirmPassword')?.touched">
+              Passwords do not match
+            </mat-error>
+          </mat-form-field>
+
+          <div class="form-options">
+            <mat-checkbox formControlName="agreeToTerms" color="primary">
+              I agree to the <a href="#" class="terms-link">Terms and Conditions</a>
+            </mat-checkbox>
+          </div>
+
+          <button mat-raised-button 
+                  color="primary"
+                  type="submit" 
+                  class="signup-button full-width"
+                  [disabled]="signupForm.invalid || isLoading">
+            <div class="button-content">
+              <mat-spinner *ngIf="isLoading" diameter="20"></mat-spinner>
+              <span *ngIf="!isLoading">Create Account</span>
+              <span *ngIf="isLoading">Creating Account...</span>
+            </div>
+          </button>
+
+          <div *ngIf="errorMessage" class="error-message">
+            <mat-icon>error</mat-icon>
+            <span>{{ errorMessage }}</span>
+          </div>
+        </form>
+
+        <div class="login-link">
+          <p>Already have an account? <a routerLink="/login" class="link">Sign in here</a></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

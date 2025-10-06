@@ -1,0 +1,114 @@
+<div class="customer-form-container">
+  <div class="page-header">
+    <h1>{{ isEditMode ? 'Edit Customer' : 'Add New Customer' }}</h1>
+    <button mat-icon-button (click)="goBack()">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+  </div>
+
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>Customer Information</mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+      <form [formGroup]="customerForm" (ngSubmit)="onSubmit()" class="customer-form">
+        
+        <!-- Customer Name -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Full Name</mat-label>
+          <input matInput formControlName="customerName" placeholder="Enter full name">
+          <mat-icon matSuffix>person</mat-icon>
+          <mat-error *ngIf="customerForm.get('customerName')?.hasError('required')">
+            Full name is required
+          </mat-error>
+          <mat-error *ngIf="customerForm.get('customerName')?.hasError('minlength')">
+            Name must be at least 2 characters long
+          </mat-error>
+        </mat-form-field>
+
+        <!-- Email -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Email Address</mat-label>
+          <input matInput formControlName="email" type="email" placeholder="Enter email address">
+          <mat-icon matSuffix>email</mat-icon>
+          <mat-error *ngIf="customerForm.get('email')?.hasError('required')">
+            Email is required
+          </mat-error>
+          <mat-error *ngIf="customerForm.get('email')?.hasError('email')">
+            Please enter a valid email address
+          </mat-error>
+        </mat-form-field>
+
+        <!-- Phone -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Phone Number</mat-label>
+          <input matInput formControlName="phoneNo" placeholder="Enter phone number">
+          <mat-icon matSuffix>phone</mat-icon>
+          <mat-error *ngIf="customerForm.get('phoneNo')?.hasError('required')">
+            Phone number is required
+          </mat-error>
+          <mat-error *ngIf="customerForm.get('phoneNo')?.hasError('pattern')">
+            Please enter a valid phone number
+          </mat-error>
+        </mat-form-field>
+
+        <!-- Address -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Address</mat-label>
+          <textarea matInput formControlName="address" 
+                    placeholder="Enter complete address" 
+                    rows="3">
+          </textarea>
+          <mat-icon matSuffix>location_on</mat-icon>
+          <mat-error *ngIf="customerForm.get('address')?.hasError('required')">
+            Address is required
+          </mat-error>
+          <mat-error *ngIf="customerForm.get('address')?.hasError('minlength')">
+            Address must be at least 10 characters long
+          </mat-error>
+        </mat-form-field>
+
+        <!-- Date of Birth -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Password</mat-label>
+          <input matInput formControlName="password" type="password" placeholder="Enter password">
+          <mat-icon matSuffix>lock</mat-icon>
+          <mat-error *ngIf="customerForm.get('password')?.hasError('required')">
+            Password is required
+          </mat-error>
+          <mat-error *ngIf="customerForm.get('password')?.hasError('minlength')">
+            Password must be at least 6 characters long
+          </mat-error>
+        </mat-form-field>
+
+        <!-- Submit Section -->
+        <div class="form-actions">
+          <button mat-raised-button 
+                  type="button" 
+                  (click)="goBack()" 
+                  class="cancel-button">
+            <mat-icon>close</mat-icon>
+            Cancel
+          </button>
+          
+          <button mat-raised-button 
+                  color="primary" 
+                  type="submit"
+                  [disabled]="customerForm.invalid || isSubmitting"
+                  class="submit-button">
+            <mat-icon>{{ isEditMode ? 'edit' : 'add' }}</mat-icon>
+            <span *ngIf="!isSubmitting">{{ isEditMode ? 'Update Customer' : 'Create Customer' }}</span>
+            <span *ngIf="isSubmitting">{{ isEditMode ? 'Updating...' : 'Creating...' }}</span>
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Loading Overlay -->
+  <div *ngIf="isLoading" class="loading-overlay">
+    <mat-spinner diameter="40"></mat-spinner>
+    <p>Loading customer details...</p>
+  </div>
+</div>

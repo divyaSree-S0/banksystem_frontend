@@ -1,0 +1,143 @@
+<div class="dashboard-container">
+  <div class="page-header">
+    <h1>Dashboard</h1>
+    <div class="header-actions">
+      <button mat-icon-button 
+              (click)="refresh()" 
+              matTooltip="Refresh Data"
+              [disabled]="isLoading">
+        <mat-icon>refresh</mat-icon>
+      </button>
+    </div>
+  </div>
+  
+  <div class="user-info" *ngIf="currentUser">
+    <p class="welcome-message">
+      Welcome back, {{ currentUser.fullName }}! 
+      <span class="role-badge" [class.admin]="isAdmin" [class.user]="!isAdmin">
+        {{ currentUser.role }}
+      </span>
+    </p>
+  </div>
+
+  <div class="stats-grid">
+    <mat-card class="stats-card" *ngIf="isAdmin">
+      <mat-card-content>
+        <div class="stats-content">
+          <div class="stats-icon">
+            <mat-icon>people</mat-icon>
+          </div>
+          <div class="stats-info">
+            <h2 *ngIf="!isLoading; else loadingTemplate">{{ totalCustomers }}</h2>
+            <p>Total Customers</p>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stats-card" *ngIf="!isAdmin">
+      <mat-card-content>
+        <div class="stats-content">
+          <div class="stats-icon">
+            <mat-icon>person</mat-icon>
+          </div>
+          <div class="stats-info">
+            <h2>{{ currentUser?.fullName }}</h2>
+            <p>Your Profile</p>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stats-card">
+      <mat-card-content>
+        <div class="stats-content">
+          <div class="stats-icon">
+            <mat-icon>account_balance</mat-icon>
+          </div>
+          <div class="stats-info">
+            <h2 *ngIf="!isLoading; else loadingTemplate">{{ totalAccounts }}</h2>
+            <p>{{ isAdmin ? 'Total Accounts' : 'Your Accounts' }}</p>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stats-card">
+      <mat-card-content>
+        <div class="stats-content">
+          <div class="stats-icon">
+            <mat-icon>receipt_long</mat-icon>
+          </div>
+          <div class="stats-info">
+            <h2 *ngIf="!isLoading; else loadingTemplate">{{ totalTransactions }}</h2>
+            <p>{{ isAdmin ? 'Total Transactions' : 'Your Transactions' }}</p>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stats-card">
+      <mat-card-content>
+        <div class="stats-content">
+          <div class="stats-icon">
+            <mat-icon>attach_money</mat-icon>
+          </div>
+          <div class="stats-info">
+            <h2 *ngIf="!isLoading; else loadingTemplate">${{ totalBalance | number:'1.2-2' }}</h2>
+            <p>{{ isAdmin ? 'Total System Balance' : 'Your Total Balance' }}</p>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <ng-template #loadingTemplate>
+    <mat-spinner diameter="24"></mat-spinner>
+  </ng-template>
+
+  <div class="quick-actions">
+    <h2>Quick Actions</h2>
+    <div class="actions-grid">
+      <!-- Admin actions -->
+      <ng-container *ngIf="isAdmin">
+        <button mat-raised-button color="primary" routerLink="/customers">
+          <mat-icon>people</mat-icon>
+          Manage Customers
+        </button>
+        <button mat-raised-button color="primary" routerLink="/accounts">
+          <mat-icon>account_balance</mat-icon>
+          Manage Accounts
+        </button>
+        <button mat-raised-button color="primary" routerLink="/transactions">
+          <mat-icon>receipt_long</mat-icon>
+          View All Transactions
+        </button>
+        <button mat-raised-button color="accent" routerLink="/customers/new">
+          <mat-icon>person_add</mat-icon>
+          Add Customer
+        </button>
+      </ng-container>
+
+      <!-- User actions -->
+      <ng-container *ngIf="!isAdmin">
+        <button mat-raised-button color="primary" routerLink="/accounts/my-accounts">
+          <mat-icon>account_balance</mat-icon>
+          My Accounts
+        </button>
+        <button mat-raised-button color="primary" routerLink="/transactions/my-transactions">
+          <mat-icon>receipt_long</mat-icon>
+          My Transactions
+        </button>
+        <button mat-raised-button color="accent" routerLink="/accounts/new">
+          <mat-icon>add</mat-icon>
+          Open New Account
+        </button>
+        <button mat-raised-button color="accent" routerLink="/transactions/new">
+          <mat-icon>swap_horiz</mat-icon>
+          Make Transaction
+        </button>
+      </ng-container>
+    </div>
+  </div>
+</div>

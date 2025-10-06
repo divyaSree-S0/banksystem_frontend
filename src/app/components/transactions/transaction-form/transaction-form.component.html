@@ -1,0 +1,137 @@
+<div class="transaction-form-container">
+  <div class="page-header">
+    <button mat-icon-button (click)="goBack()">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <h1>{{ getPageTitle() }}</h1>
+  </div>
+
+  <mat-card class="transaction-form-card">
+    <mat-card-header>
+      <mat-card-title>Transaction Details</mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+      <form [formGroup]="transactionForm" (ngSubmit)="onSubmit()">
+        
+        <!-- Transaction Type Selection -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Transaction Type</mat-label>
+          <mat-select formControlName="type" (selectionChange)="onTypeChange()">
+            <mat-option value="DEPOSIT">Deposit Money</mat-option>
+            <mat-option value="WITHDRAW">Withdraw Money</mat-option>
+            <mat-option value="TRANSFER">Transfer Money</mat-option>
+          </mat-select>
+          <mat-error *ngIf="transactionForm.get('type')?.hasError('required')">
+            Please select a transaction type
+          </mat-error>
+        </mat-form-field>
+
+        <!-- From Account (for withdraw and transfer) -->
+        <mat-form-field appearance="outline" class="full-width" 
+                       *ngIf="selectedType === 'WITHDRAW' || selectedType === 'TRANSFER'">
+          <mat-label>From Account</mat-label>
+          <mat-select formControlName="fromAccountId" (selectionChange)="onFromAccountChange()">
+            <mat-option *ngFor="let account of availableAccounts" [value]="account.accountId">
+              {{ account.accountNumber }} - {{ account.customerName }} 
+              (${{ account.balance | number:'1.2-2' }})
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="transactionForm.get('fromAccountId')?.hasError('required')">
+            Please select the source account
+          </mat-error>
+        </mat-form-field>
+
+        <!-- To Account (for deposit and transfer) -->
+        <mat-form-field appearance="outline" class="full-width" 
+                       *ngIf="selectedType === 'DEPOSIT' || selectedType === 'TRANSFER'">
+          <mat-label>{{ selectedType === 'DEPOSIT' ? 'Account' : 'To Account' }}</mat-label>
+          <mat-select formControlName="toAccountId">
+            <mat-option *ngFor="let account of getToAccountOptions()" [value]="account.accountId">
+              {{ account.accountNumber }} - {{ account.customerName }}
+              <span *ngIf="selectedType === 'DEPOSIT'">
+                (${{ account.balance | number:'1.2-2' }})
+              </span>
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="transactionForm.get('toAccountId')?.hasError('required')">
+            Please select the {{ selectedType === 'DEPOSIT' ? 'account' : 'destination account' }}
+          </mat-error>
+        </mat-form-field>
+
+        <!-- Amount -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Amount</mat-label>
+          <input matInput 
+                 type="number" 
+                 formControlName="amount" 
+                 placeholder="0.00"
+                 step="0.01"
+                 min="0.01">
+          <span matPrefix>$&nbsp;</span>
+          <mat-error *ngIf="transactionForm.get('amount')?.hasError('required')">
+            Amount is required
+          </mat-error>
+          <mat-error *ngIf="transactionForm.get('amount')?.hasError('min')">
+            Amount must be greater than $0.00
+          </mat-error>
+          <mat-error *ngIf="transactionForm.get('amount')?.hasError('max')">
+            Amount exceeds available balance
+          </mat-error>
+        </mat-form-field>
+
+        <!-- Description -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Description (Optional)</mat-label>
+          <textarea matInput 
+                   formControlName="description" 
+                   rows="3"
+                   placeholder="Enter transaction description..."></textarea>
+        </mat-form-field>
+
+        <!-- Account Balance Info -->
+        <div *ngIf="selectedFromAccount" class="balance-info">
+          <div class="balance-card">
+            <h4>Account Balance</h4>
+            <div class="balance-details">
+              <div class="current-balance">
+                <span class="label">Current:</span>
+                <span class="amount">${{ selectedFromAccount.balance | number:'1.2-2' }}</span>
+              </div>
+              <div class="remaining-balance" *ngIf="transactionForm.get('amount')?.value">
+                <span class="label">After transaction:</span>
+                <span class="amount" [class]="getRemainingBalanceClass()">
+                  ${{ getRemainingBalance() | number:'1.2-2' }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Transfer Warning -->
+        <div *ngIf="selectedType === 'TRANSFER' && transactionForm.get('fromAccountId')?.value === transactionForm.get('toAccountId')?.value" 
+             class="transfer-warning">
+          <mat-icon>warning</mat-icon>
+          <span>Source and destination accounts cannot be the same</span>
+        </div>
+
+      </form>
+    </mat-card-content>
+
+    <mat-card-actions>
+      <button mat-button type="button" (click)="goBack()">
+        <mat-icon>cancel</mat-icon>
+        Cancel
+      </button>
+      
+      <button mat-raised-button 
+              color="primary" 
+              (click)="onSubmit()"
+              [disabled]="transactionForm.invalid || isSubmitting || isSameAccount()">
+        <mat-icon *ngIf="!isSubmitting">{{ getSubmitIcon() }}</mat-icon>
+        <mat-spinner *ngIf="isSubmitting" diameter="20"></mat-spinner>
+        {{ getSubmitText() }}
+      </button>
+    </mat-card-actions>
+  </mat-card>
+</div>

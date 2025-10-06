@@ -1,0 +1,81 @@
+<div *ngIf="authService.isAuthenticated(); else loginView" class="app-container">
+  <mat-sidenav-container class="sidenav-container">
+    <mat-sidenav #drawer class="sidenav" fixedInViewport mode="side" opened="true">
+      <mat-toolbar class="sidenav-header">
+        <mat-icon class="logo-icon">account_balance</mat-icon>
+        <span>Banking System</span>
+      </mat-toolbar>
+      <mat-nav-list>
+        <a mat-list-item routerLink="/dashboard" routerLinkActive="active">
+          <mat-icon matListItemIcon>dashboard</mat-icon>
+          <span matListItemTitle>Dashboard</span>
+        </a>
+        <a mat-list-item routerLink="/customers" routerLinkActive="active">
+          <mat-icon matListItemIcon>people</mat-icon>
+          <span matListItemTitle>Customers</span>
+        </a>
+        <a mat-list-item routerLink="/accounts" routerLinkActive="active">
+          <mat-icon matListItemIcon>account_balance</mat-icon>
+          <span matListItemTitle>Accounts</span>
+        </a>
+        <a mat-list-item routerLink="/transactions" routerLinkActive="active">
+          <mat-icon matListItemIcon>receipt_long</mat-icon>
+          <span matListItemTitle>Transactions</span>
+        </a>
+        
+        <mat-divider></mat-divider>
+        
+        <div class="user-section">
+          <div class="user-info" *ngIf="currentUser">
+            <mat-icon class="user-avatar">account_circle</mat-icon>
+            <div class="user-details">
+              <span class="user-name">{{ currentUser.fullName }}</span>
+              <span class="user-role">{{ currentUser.role }}</span>
+            </div>
+          </div>
+        </div>
+      </mat-nav-list>
+    </mat-sidenav>
+
+    <mat-sidenav-content>
+      <mat-toolbar color="primary">
+        <button type="button" aria-label="Toggle sidenav" mat-icon-button (click)="drawer.toggle()">
+          <mat-icon>menu</mat-icon>
+        </button>
+        <span>Banking System</span>
+        <span class="spacer"></span>
+        
+        <div class="header-user-info" *ngIf="currentUser">
+          <span class="welcome-text">Welcome, {{ currentUser.fullName }}</span>
+          <button mat-icon-button [matMenuTriggerFor]="userMenu" aria-label="User menu">
+            <mat-icon>account_circle</mat-icon>
+          </button>
+        </div>
+        
+        <mat-menu #userMenu="matMenu">
+          <button mat-menu-item disabled>
+            <mat-icon>person</mat-icon>
+            <span>{{ currentUser?.fullName }}</span>
+          </button>
+          <button mat-menu-item disabled>
+            <mat-icon>badge</mat-icon>
+            <span>{{ currentUser?.role }}</span>
+          </button>
+          <mat-divider></mat-divider>
+          <button mat-menu-item (click)="logout()">
+            <mat-icon>logout</mat-icon>
+            <span>Logout</span>
+          </button>
+        </mat-menu>
+      </mat-toolbar>
+
+      <div class="content">
+        <router-outlet></router-outlet>
+      </div>
+    </mat-sidenav-content>
+  </mat-sidenav-container>
+</div>
+
+<ng-template #loginView>
+  <router-outlet></router-outlet>
+</ng-template>

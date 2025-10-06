@@ -1,0 +1,180 @@
+<div class="transaction-list-container">
+  <div class="page-header">
+    <h1>{{ isAdmin ? 'All Transactions' : 'My Transactions' }}</h1>
+    <div class="header-actions">
+      <button mat-icon-button 
+              (click)="refresh()" 
+              matTooltip="Refresh Transactions"
+              [disabled]="loading">
+        <mat-icon>refresh</mat-icon>
+      </button>
+      <button mat-raised-button color="primary" routerLink="/transactions/new">
+        <mat-icon>add</mat-icon>
+        New Transaction
+      </button>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <mat-card class="filters-card">
+    <mat-card-content>
+      <div class="filters-row">
+        <mat-form-field appearance="outline">
+          <mat-label>Search</mat-label>
+          <input matInput 
+                 [formControl]="searchControl" 
+                 placeholder="Search by description or amount...">
+          <mat-icon matSuffix>search</mat-icon>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Transaction Type</mat-label>
+          <mat-select [formControl]="typeControl">
+            <mat-option value="">All Types</mat-option>
+            <mat-option value="DEPOSIT">Deposit</mat-option>
+            <mat-option value="WITHDRAW">Withdraw</mat-option>
+            <mat-option value="TRANSFER">Transfer</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Account</mat-label>
+          <mat-select [formControl]="accountControl">
+            <mat-option value="">All Accounts</mat-option>
+            <mat-option *ngFor="let account of availableAccounts" [value]="account.accountNumber">
+              {{ account.accountNumber }} - {{ account.customerName }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <button mat-icon-button color="accent" (click)="clearFilters()" matTooltip="Clear Filters">
+          <mat-icon>clear</mat-icon>
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Transactions Table -->
+  <mat-card class="transactions-card">
+    <mat-card-header>
+      <mat-card-title>
+        Transactions ({{ filteredTransactions.length }})
+      </mat-card-title>
+      <div class="card-header-actions">
+        <button mat-icon-button color="primary" (click)="loadTransactions()" matTooltip="Refresh">
+          <mat-icon>refresh</mat-icon>
+        </button>
+      </div>
+    </mat-card-header>
+
+    <mat-card-content>
+      <!-- Loading State -->
+      <div *ngIf="loading" class="loading-container">
+        <mat-spinner></mat-spinner>
+        <p>Loading transactions...</p>
+      </div>
+
+      <!-- Transactions Table -->
+      <div *ngIf="!loading" class="table-container">
+        <table mat-table [dataSource]="filteredTransactions" class="transactions-table" *ngIf="filteredTransactions.length > 0">
+          
+          <!-- Date Column -->
+          <ng-container matColumnDef="dateTime">
+            <th mat-header-cell *matHeaderCellDef>Date & Time</th>
+            <td mat-cell *matCellDef="let transaction">
+              <div class="date-info">
+                <span class="date">{{ transaction.dateTime | date:'MMM dd, yyyy' }}</span>
+                <small class="time">{{ transaction.dateTime | date:'HH:mm:ss' }}</small>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Type Column -->
+          <ng-container matColumnDef="type">
+            <th mat-header-cell *matHeaderCellDef>Type</th>
+            <td mat-cell *matCellDef="let transaction">
+              <mat-chip [class]="'type-' + transaction.type.toLowerCase()">
+                {{ transaction.type }}
+              </mat-chip>
+            </td>
+          </ng-container>
+
+          <!-- Account Column -->
+          <ng-container matColumnDef="account">
+            <th mat-header-cell *matHeaderCellDef>Account</th>
+            <td mat-cell *matCellDef="let transaction">
+              <div class="account-info">
+                <span class="account-number">{{ transaction.accountNumber }}</span>
+                <small class="customer-name">{{ transaction.customerName }}</small>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Description Column -->
+          <ng-container matColumnDef="description">
+            <th mat-header-cell *matHeaderCellDef>Description</th>
+            <td mat-cell *matCellDef="let transaction">
+              {{ transaction.description || 'No description' }}
+            </td>
+          </ng-container>
+
+          <!-- Amount Column -->
+          <ng-container matColumnDef="amount">
+            <th mat-header-cell *matHeaderCellDef>Amount</th>
+            <td mat-cell *matCellDef="let transaction" class="amount-cell">
+              <span [class]="getTransactionAmountClass(transaction.type)">
+                {{ getTransactionSign(transaction.type) }}${{ transaction.amount | number:'1.2-2' }}
+              </span>
+            </td>
+          </ng-container>
+
+          <!-- Actions Column -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Actions</th>
+            <td mat-cell *matCellDef="let transaction">
+              <button mat-icon-button color="primary" 
+                      [routerLink]="['/accounts', getAccountIdFromNumber(transaction.accountNumber)]"
+                      matTooltip="View Account">
+                <mat-icon>account_balance</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+
+        <!-- No Transactions Message -->
+        <div *ngIf="filteredTransactions.length === 0" class="no-transactions">
+          <mat-icon>receipt_long</mat-icon>
+          <h3>No transactions found</h3>
+          <p *ngIf="hasActiveFilters()">Try adjusting your search filters.</p>
+          <p *ngIf="!hasActiveFilters()">No transactions have been recorded yet.</p>
+          <button mat-raised-button color="primary" routerLink="/transactions/new">
+            <mat-icon>add</mat-icon>
+            Create First Transaction
+          </button>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Quick Actions -->
+  <div class="quick-actions">
+    <h3>Quick Actions</h3>
+    <div class="action-buttons">
+      <button mat-raised-button color="primary" routerLink="/transactions/new" [queryParams]="{type: 'deposit'}">
+        <mat-icon>add</mat-icon>
+        Deposit Money
+      </button>
+      <button mat-raised-button color="accent" routerLink="/transactions/new" [queryParams]="{type: 'withdraw'}">
+        <mat-icon>remove</mat-icon>
+        Withdraw Money
+      </button>
+      <button mat-raised-button color="primary" routerLink="/transactions/new" [queryParams]="{type: 'transfer'}">
+        <mat-icon>swap_horiz</mat-icon>
+        Transfer Money
+      </button>
+    </div>
+  </div>
+</div>
